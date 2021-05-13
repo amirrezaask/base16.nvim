@@ -22,7 +22,21 @@ also you can see list of available themes with
 ```lua
 print(vim.inspect(require('base16.themes').names()))
 ```
-
+## Create your custom colorscheme
+You can create your own customized colorscheme based on a base16 colorscheme
+```lua
+require'base16.editor'.open(require'base16.themes'[theme_name])
+```
+this will open up a buffer that you can edit the color codes and then you can save it like this
+```vim
+:Save your_custom_name
+```
+it will save this colorscheme in your $NeovimConfigurationPath/colors/your_custom_name.vim
+you can then apply it with
+```vim
+colorscheme your_custom_name
+```
+for better experience when editing the color codes use [nvim-colorizer](https://github.com/norcalli/nvim-colorizer.lua)
 ## Telescope integration
 You can have a simple telescope picker and cycle thorough all themes
 and apply any one you want with this simple picker

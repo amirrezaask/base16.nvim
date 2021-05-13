@@ -208,17 +208,23 @@ function M.open(initial)
     end
   end
 
-  base16.apply_theme(initial)
-
+  initial:apply()
   local FORMAT = "base%02X"
   local function base(n)
     return FORMAT:format(n)
   end
 
+  local function pre_process_colors(color)
+    if color:sub(1, 1) == '#' then
+      return color
+    end
+    return '#' .. color
+  end
+
   do
     local lines = {}
     for i = 1, 16 do
-      lines[i] = "#"..initial[base(i-1)]
+      lines[i] = pre_process_colors(initial[base(i-1)])
     end
     api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 
@@ -251,14 +257,6 @@ function M.open(initial)
     end
   })
 
-  function base16_editor_random()
-    local lines = {}
-    for i = 1, 16 do
-      lines[i] = hexnum(math.random(1, 16777215))
-    end
-    api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-  end
-
   function base16_editor_save(name)
     local theme = get()
     if not theme then
@@ -266,7 +264,7 @@ function M.open(initial)
     end
     local formatted_theme = {}
     for i = 1, 16 do
-      formatted_theme[i] = ("base%02X = %q"):format(i - 1, theme[i])
+      formatted_theme[i] = ("base%02X = %q"):format(i - 1, pre_process_colors(theme[i]))
     end
     formatted_theme = table.concat(formatted_theme, ';\n  ')
     local colors_dir = vim.fn.fnamemodify(vim.env.MYVIMRC, ":h:p").."/colors/"
@@ -275,9 +273,9 @@ function M.open(initial)
     local file = io.open(filename, "w")
     local inner = ([[
 lua <<EOF
-require'base16' {
+require'base16'.apply ({
   {theme}
-}
+}, true)
 EOF
 let g:colors_name = {name}
 ]]):gsub("{(%w+)}", {
@@ -291,23 +289,8 @@ let g:colors_name = {name}
     api.nvim_set_current_buf(vim.fn.bufadd(filename))
   end
 
-  vim.cmd "command! -buffer Random lua base16_editor_random()"
   vim.cmd "command! -buffer -nargs=1 Save lua base16_editor_save(<f-args>)"
-
-  -- for hi in vim.gsplit(vim.fn.execute("hi"), '\n', true) do
-  --   if filter(hi) then
-  --   -- if filter and hi:match(filter) then
-  --     highlights[#highlights+1] = hi:match("^(%S+)")
-  --   end
-  -- end
-  -- -- table.sort(highlights)
-  -- open_highlight_editor(highlights)
 end
-
--- vim.cmd "augroup KianiPalette"
--- vim.cmd "au!"
--- vim.cmd "autocmd BufReadCmd palette://* lua require'palette'.highlight_editor()"
--- vim.cmd "augroup end"
 
 return M
 
