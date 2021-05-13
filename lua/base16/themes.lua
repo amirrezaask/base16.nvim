@@ -2333,4 +2333,11 @@ themes['zenburn'] = Theme:new {
   base0E = '#dc8cc3',
   base0F = '#000000',
 }
+function themes:names()
+  local names = {}
+  for name, _ in pairs(self) do
+    table.insert(names, name)
+  end
+  return names
+end
 return themes
