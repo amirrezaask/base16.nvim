@@ -59,52 +59,37 @@ local function apply_base16_theme(theme, use_256_colorspace)
     cterm09 = '09'
     cterm0F = '14'
   end
-
+  local function pre_process_colors(color)
+    if color:sub(1, 1) == '#' then
+      return color
+    end
+    return '#' .. color
+  end
   -- Neovim terminal colours
   if vim.fn.has('nvim') then
-    vim.g.terminal_color_0 = '#' .. theme.base00
-    vim.g.terminal_color_1 = '#' .. theme.base08
-    vim.g.terminal_color_2 = '#' .. theme.base0B
-    vim.g.terminal_color_3 = '#' .. theme.base0A
-    vim.g.terminal_color_4 = '#' .. theme.base0D
-    vim.g.terminal_color_5 = '#' .. theme.base0E
-    vim.g.terminal_color_6 = '#' .. theme.base0C
-    vim.g.terminal_color_7 = '#' .. theme.base05
-    vim.g.terminal_color_8 = '#' .. theme.base03
-    vim.g.terminal_color_9 = '#' .. theme.base08
-    vim.g.terminal_color_10 = '#' .. theme.base0B
-    vim.g.terminal_color_11 = '#' .. theme.base0A
-    vim.g.terminal_color_12 = '#' .. theme.base0D
-    vim.g.terminal_color_13 = '#' .. theme.base0E
-    vim.g.terminal_color_14 = '#' .. theme.base0C
-    vim.g.terminal_color_15 = '#' .. theme.base07
+    vim.g.terminal_color_0 = pre_process_colors(theme.base00)
+    vim.g.terminal_color_1 = pre_process_colors(theme.base08)
+    vim.g.terminal_color_2 = pre_process_colors(theme.base0B)
+    vim.g.terminal_color_3 = pre_process_colors(theme.base0A)
+    vim.g.terminal_color_4 = pre_process_colors(theme.base0D)
+    vim.g.terminal_color_5 = pre_process_colors(theme.base0E)
+    vim.g.terminal_color_6 = pre_process_colors(theme.base0C)
+    vim.g.terminal_color_7 = pre_process_colors(theme.base05)
+    vim.g.terminal_color_8 = pre_process_colors(theme.base03)
+    vim.g.terminal_color_9 = pre_process_colors(theme.base08)
+    vim.g.terminal_color_10 = pre_process_colors(theme.base0B)
+    vim.g.terminal_color_11 = pre_process_colors(theme.base0A)
+    vim.g.terminal_color_12 = pre_process_colors(theme.base0D)
+    vim.g.terminal_color_13 = pre_process_colors(theme.base0E)
+    vim.g.terminal_color_14 = pre_process_colors(theme.base0C)
+    vim.g.terminal_color_15 = pre_process_colors(theme.base07)
     if vim.o.background == 'light' then
-      vim.g.terminal_color_background = '#' .. theme.base05
-      vim.g.terminal_color_foreground = '#' .. theme.base0B
+      vim.g.terminal_color_background = pre_process_colors(theme.base05)
+      vim.g.terminal_color_foreground = pre_process_colors(theme.base0B)
     else
-      vim.g.terminal_color_background = '#' .. theme.base00
-      vim.g.terminal_color_foreground = '#' .. theme.base0E
+      vim.g.terminal_color_background = pre_process_colors(theme.base00)
+      vim.g.terminal_color_foreground = pre_process_colors(theme.base0E)
     end
-    -- VIM, not NVIM settings
-    -- elseif nvim.fn.has("terminal") then
-    -- 	nvim.g.terminal_ansi_colors = {
-    -- 		theme.base00,
-    -- 		theme.base08,
-    -- 		theme.base0B,
-    -- 		theme.base0A,
-    -- 		theme.base0D,
-    -- 		theme.base0E,
-    -- 		theme.base0C,
-    -- 		theme.base05,
-    -- 		theme.base03,
-    -- 		theme.base08,
-    -- 		theme.base0B,
-    -- 		theme.base0A,
-    -- 		theme.base0D,
-    -- 		theme.base0E,
-    -- 		theme.base0C,
-    -- 		theme.base07,
-    -- 	}
   end
 
   -- TODO
