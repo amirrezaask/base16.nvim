@@ -91,10 +91,10 @@ local function apply(theme, use_256_colorspace, name)
     end
   end
 
-  vim.g.colors_name = name or 'base16'
+  -- vim.g.colors_name = name or 'base16'
   
-  nvim_command "hi clear"
-  nvim_command "syntax reset"
+  -- nvim_command "hi clear"
+  -- nvim_command "syntax reset"
 
   -- Vim editor colors
   highlight('Normal', theme.base05, theme.base00, cterm05, cterm00, nil, nil)
