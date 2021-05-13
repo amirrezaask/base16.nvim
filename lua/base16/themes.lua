@@ -1,340 +1,17 @@
-local vim = vim
-local nvim_command = vim.api.nvim_command
-
-local function highlight(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
-  local parts = { 'highlight', group }
-  if guifg then
-    table.insert(parts, 'guifg=' .. guifg)
-  end
-  if guibg then
-    table.insert(parts, 'guibg=' .. guibg)
-  end
-  if ctermfg then
-    table.insert(parts, 'ctermfg=' .. ctermfg)
-  end
-  if ctermbg then
-    table.insert(parts, 'ctermbg=' .. ctermbg)
-  end
-  if attr then
-    table.insert(parts, 'gui=' .. attr)
-    table.insert(parts, 'cterm=' .. attr)
-  end
-  if guisp then
-    table.insert(parts, 'guisp=' .. guisp)
-  end
-
-  nvim_command(table.concat(parts, ' '))
-end
-
--- Modified from https://github.com/chriskempson/base16-vim
-local function apply_base16_theme(theme, use_256_colorspace, name)
-  -- Terminal color definitions
-  local cterm00 = '00'
-  local cterm03 = '08'
-  local cterm05 = '07'
-  local cterm07 = '15'
-  local cterm08 = '01'
-  local cterm0A = '03'
-  local cterm0B = '02'
-  local cterm0C = '06'
-  local cterm0D = '04'
-  local cterm0E = '05'
-
-  local cterm01, cterm02, cterm04, cterm06, cterm09, cterm0F
-
-  if use_256_colorspace then
-    cterm01 = '18'
-    cterm02 = '19'
-    cterm04 = '20'
-    cterm06 = '21'
-    cterm09 = '16'
-    cterm0F = '17'
-  else
-    cterm01 = '10'
-    cterm02 = '11'
-    cterm04 = '12'
-    cterm06 = '13'
-    cterm09 = '09'
-    cterm0F = '14'
-  end
-  local function pre_process_colors(color)
-    if color:sub(1, 1) == '#' then
-      return color
-    end
-    return '#' .. color
-  end
-  -- Neovim terminal colours
-  if vim.fn.has('nvim') then
-    vim.g.terminal_color_0 = pre_process_colors(theme.base00)
-    vim.g.terminal_color_1 = pre_process_colors(theme.base08)
-    vim.g.terminal_color_2 = pre_process_colors(theme.base0B)
-    vim.g.terminal_color_3 = pre_process_colors(theme.base0A)
-    vim.g.terminal_color_4 = pre_process_colors(theme.base0D)
-    vim.g.terminal_color_5 = pre_process_colors(theme.base0E)
-    vim.g.terminal_color_6 = pre_process_colors(theme.base0C)
-    vim.g.terminal_color_7 = pre_process_colors(theme.base05)
-    vim.g.terminal_color_8 = pre_process_colors(theme.base03)
-    vim.g.terminal_color_9 = pre_process_colors(theme.base08)
-    vim.g.terminal_color_10 = pre_process_colors(theme.base0B)
-    vim.g.terminal_color_11 = pre_process_colors(theme.base0A)
-    vim.g.terminal_color_12 = pre_process_colors(theme.base0D)
-    vim.g.terminal_color_13 = pre_process_colors(theme.base0E)
-    vim.g.terminal_color_14 = pre_process_colors(theme.base0C)
-    vim.g.terminal_color_15 = pre_process_colors(theme.base07)
-    P(vim.g.terminal_color_0)
-    if vim.o.background == 'light' then
-      vim.g.terminal_color_background = pre_process_colors(theme.base05)
-      vim.g.terminal_color_foreground = pre_process_colors(theme.base0B)
-    else
-      vim.g.terminal_color_background = pre_process_colors(theme.base00)
-      vim.g.terminal_color_foreground = pre_process_colors(theme.base0E)
-    end
-  end
-
-  vim.g.colors_name = name or 'base16'
-  
-  nvim_command "hi clear"
-  nvim_command "syntax reset"
-
-  -- Vim editor colors
-  highlight('Normal', theme.base05, theme.base00, cterm05, cterm00, nil, nil)
-  highlight('Bold', nil, nil, nil, nil, 'bold', nil)
-  highlight('Debug', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('Directory', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('Error', theme.base00, theme.base08, cterm00, cterm08, nil, nil)
-  highlight('ErrorMsg', theme.base08, theme.base00, cterm08, cterm00, nil, nil)
-  highlight('Exception', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('FoldColumn', theme.base0C, theme.base01, cterm0C, cterm01, nil, nil)
-  highlight('Folded', theme.base03, theme.base01, cterm03, cterm01, nil, nil)
-  highlight('IncSearch', theme.base01, theme.base09, cterm01, cterm09, 'none', nil)
-  highlight('Italic', nil, nil, nil, nil, 'none', nil)
-  highlight('Macro', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('MatchParen', nil, theme.base03, nil, cterm03, nil, nil)
-  highlight('ModeMsg', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('MoreMsg', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('Question', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('Search', theme.base01, theme.base0A, cterm01, cterm0A, nil, nil)
-  highlight('Substitute', theme.base01, theme.base0A, cterm01, cterm0A, 'none', nil)
-  highlight('SpecialKey', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('TooLong', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('Underlined', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('Visual', nil, theme.base02, nil, cterm02, nil, nil)
-  highlight('VisualNOS', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('WarningMsg', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('WildMenu', theme.base08, theme.base0A, cterm08, nil, nil, nil)
-  highlight('Title', theme.base0D, nil, cterm0D, nil, 'none', nil)
-  highlight('Conceal', theme.base0D, theme.base00, cterm0D, cterm00, nil, nil)
-  highlight('Cursor', theme.base00, theme.base05, cterm00, cterm05, nil, nil)
-  highlight('NonText', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('LineNr', theme.base03, theme.base01, cterm03, cterm01, nil, nil)
-  highlight('SignColumn', theme.base03, theme.base01, cterm03, cterm01, nil, nil)
-  highlight('StatusLine', theme.base04, theme.base02, cterm04, cterm02, 'none', nil)
-  highlight('StatusLineNC', theme.base03, theme.base01, cterm03, cterm01, 'none', nil)
-  highlight('VertSplit', theme.base02, theme.base02, cterm02, cterm02, 'none', nil)
-  highlight('ColorColumn', nil, theme.base01, nil, cterm01, 'none', nil)
-  highlight('CursorColumn', nil, theme.base01, nil, cterm01, 'none', nil)
-  highlight('CursorLine', nil, theme.base01, nil, cterm01, 'none', nil)
-  highlight('CursorLineNr', theme.base04, theme.base01, cterm04, cterm01, nil, nil)
-  highlight('QuickFixLine', nil, theme.base01, nil, cterm01, 'none', nil)
-  highlight('PMenu', theme.base05, theme.base01, cterm05, cterm01, 'none', nil)
-  highlight('PMenuSel', theme.base01, theme.base05, cterm01, cterm05, nil, nil)
-  highlight('TabLine', theme.base03, theme.base01, cterm03, cterm01, 'none', nil)
-  highlight('TabLineFill', theme.base03, theme.base01, cterm03, cterm01, 'none', nil)
-  highlight('TabLineSel', theme.base0B, theme.base01, cterm0B, cterm01, 'none', nil)
-
-  -- Standard syntax highlighting
-  highlight('Boolean', theme.base09, nil, cterm09, nil, nil, nil)
-  highlight('Character', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('Comment', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('Conditional', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('Constant', theme.base09, nil, cterm09, nil, nil, nil)
-  highlight('Define', theme.base0E, nil, cterm0E, nil, 'none', nil)
-  highlight('Delimiter', theme.base0F, nil, cterm0F, nil, nil, nil)
-  highlight('Float', theme.base09, nil, cterm09, nil, nil, nil)
-  highlight('Function', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('Identifier', theme.base08, nil, cterm08, nil, 'none', nil)
-  highlight('Include', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('Keyword', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('Label', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('Number', theme.base09, nil, cterm09, nil, nil, nil)
-  highlight('Operator', theme.base05, nil, cterm05, nil, 'none', nil)
-  highlight('PreProc', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('Repeat', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('Special', theme.base0C, nil, cterm0C, nil, nil, nil)
-  highlight('SpecialChar', theme.base0F, nil, cterm0F, nil, nil, nil)
-  highlight('Statement', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('StorageClass', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('String', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('Structure', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('Tag', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('Todo', theme.base0A, theme.base01, cterm0A, cterm01, nil, nil)
-  highlight('Type', theme.base0A, nil, cterm0A, nil, 'none', nil)
-  highlight('Typedef', theme.base0A, nil, cterm0A, nil, nil, nil)
-
-  ---
-  -- Extra definitions
-  ---
-
-  -- C highlighting
-  highlight('cOperator', theme.base0C, nil, cterm0C, nil, nil, nil)
-  highlight('cPreCondit', theme.base0E, nil, cterm0E, nil, nil, nil)
-
-  -- C# highlighting
-  highlight('csClass', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('csAttribute', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('csModifier', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('csType', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('csUnspecifiedStatement', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('csContextualStatement', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('csNewDecleration', theme.base08, nil, cterm08, nil, nil, nil)
-
-  -- CSS highlighting
-  highlight('cssBraces', theme.base05, nil, cterm05, nil, nil, nil)
-  highlight('cssClassName', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('cssColor', theme.base0C, nil, cterm0C, nil, nil, nil)
-
-  -- Diff highlighting
-  highlight('DiffAdd', theme.base0B, theme.base01, cterm0B, cterm01, nil, nil)
-  highlight('DiffChange', theme.base03, theme.base01, cterm03, cterm01, nil, nil)
-  highlight('DiffDelete', theme.base08, theme.base01, cterm08, cterm01, nil, nil)
-  highlight('DiffText', theme.base0D, theme.base01, cterm0D, cterm01, nil, nil)
-  highlight('DiffAdded', theme.base0B, theme.base00, cterm0B, cterm00, nil, nil)
-  highlight('DiffFile', theme.base08, theme.base00, cterm08, cterm00, nil, nil)
-  highlight('DiffNewFile', theme.base0B, theme.base00, cterm0B, cterm00, nil, nil)
-  highlight('DiffLine', theme.base0D, theme.base00, cterm0D, cterm00, nil, nil)
-  highlight('DiffRemoved', theme.base08, theme.base00, cterm08, cterm00, nil, nil)
-
-  -- Git highlighting
-  highlight('gitcommitOverflow', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('gitcommitSummary', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('gitcommitComment', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('gitcommitUntracked', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('gitcommitDiscarded', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('gitcommitSelected', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('gitcommitHeader', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('gitcommitSelectedType', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('gitcommitUnmergedType', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('gitcommitDiscardedType', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('gitcommitBranch', theme.base09, nil, cterm09, nil, 'bold', nil)
-  highlight('gitcommitUntrackedFile', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('gitcommitUnmergedFile', theme.base08, nil, cterm08, nil, 'bold', nil)
-  highlight('gitcommitDiscardedFile', theme.base08, nil, cterm08, nil, 'bold', nil)
-  highlight('gitcommitSelectedFile', theme.base0B, nil, cterm0B, nil, 'bold', nil)
-
-  -- GitGutter highlighting
-  highlight('GitGutterAdd', theme.base0B, theme.base01, cterm0B, cterm01, nil, nil)
-  highlight('GitGutterChange', theme.base0D, theme.base01, cterm0D, cterm01, nil, nil)
-  highlight('GitGutterDelete', theme.base08, theme.base01, cterm08, cterm01, nil, nil)
-  highlight('GitGutterChangeDelete', theme.base0E, theme.base01, cterm0E, cterm01, nil, nil)
-
-  -- HTML highlighting
-  highlight('htmlBold', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('htmlItalic', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('htmlEndTag', theme.base05, nil, cterm05, nil, nil, nil)
-  highlight('htmlTag', theme.base05, nil, cterm05, nil, nil, nil)
-
-  -- JavaScript highlighting
-  highlight('javaScript', theme.base05, nil, cterm05, nil, nil, nil)
-  highlight('javaScriptBraces', theme.base05, nil, cterm05, nil, nil, nil)
-  highlight('javaScriptNumber', theme.base09, nil, cterm09, nil, nil, nil)
-  -- pangloss/vim-javascript highlighting
-  highlight('jsOperator', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('jsStatement', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('jsReturn', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('jsThis', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('jsClassDefinition', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('jsFunction', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('jsFuncName', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('jsFuncCall', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('jsClassFuncName', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('jsClassMethodType', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('jsRegexpString', theme.base0C, nil, cterm0C, nil, nil, nil)
-  highlight('jsGlobalObjects', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('jsGlobalNodeObjects', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('jsExceptions', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('jsBuiltins', theme.base0A, nil, cterm0A, nil, nil, nil)
-
-  -- Mail highlighting
-  highlight('mailQuoted1', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('mailQuoted2', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('mailQuoted3', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('mailQuoted4', theme.base0C, nil, cterm0C, nil, nil, nil)
-  highlight('mailQuoted5', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('mailQuoted6', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('mailURL', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('mailEmail', theme.base0D, nil, cterm0D, nil, nil, nil)
-
-  -- Markdown highlighting
-  highlight('markdownCode', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('markdownError', theme.base05, theme.base00, cterm05, cterm00, nil, nil)
-  highlight('markdownCodeBlock', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('markdownHeadingDelimiter', theme.base0D, nil, cterm0D, nil, nil, nil)
-
-  -- NERDTree highlighting
-  highlight('NERDTreeDirSlash', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('NERDTreeExecFile', theme.base05, nil, cterm05, nil, nil, nil)
-
-  -- PHP highlighting
-  highlight('phpMemberSelector', theme.base05, nil, cterm05, nil, nil, nil)
-  highlight('phpComparison', theme.base05, nil, cterm05, nil, nil, nil)
-  highlight('phpParent', theme.base05, nil, cterm05, nil, nil, nil)
-  highlight('phpMethodsVar', theme.base0C, nil, cterm0C, nil, nil, nil)
-
-  -- Python highlighting
-  highlight('pythonOperator', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('pythonRepeat', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('pythonInclude', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('pythonStatement', theme.base0E, nil, cterm0E, nil, nil, nil)
-
-  -- Ruby highlighting
-  highlight('rubyAttribute', theme.base0D, nil, cterm0D, nil, nil, nil)
-  highlight('rubyConstant', theme.base0A, nil, cterm0A, nil, nil, nil)
-  highlight('rubyInterpolationDelimiter', theme.base0F, nil, cterm0F, nil, nil, nil)
-  highlight('rubyRegexp', theme.base0C, nil, cterm0C, nil, nil, nil)
-  highlight('rubySymbol', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('rubyStringDelimiter', theme.base0B, nil, cterm0B, nil, nil, nil)
-
-  -- SASS highlighting
-  highlight('sassidChar', theme.base08, nil, cterm08, nil, nil, nil)
-  highlight('sassClassChar', theme.base09, nil, cterm09, nil, nil, nil)
-  highlight('sassInclude', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('sassMixing', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('sassMixinName', theme.base0D, nil, cterm0D, nil, nil, nil)
-
-  -- Signify highlighting
-  highlight('SignifySignAdd', theme.base0B, theme.base01, cterm0B, cterm01, nil, nil)
-  highlight('SignifySignChange', theme.base0D, theme.base01, cterm0D, cterm01, nil, nil)
-  highlight('SignifySignDelete', theme.base08, theme.base01, cterm08, cterm01, nil, nil)
-
-  -- Spelling highlighting
-  highlight('SpellBad', nil, nil, nil, nil, 'undercurl', theme.base08)
-  highlight('SpellLocal', nil, nil, nil, nil, 'undercurl', theme.base0C)
-  highlight('SpellCap', nil, nil, nil, nil, 'undercurl', theme.base0D)
-  highlight('SpellRare', nil, nil, nil, nil, 'undercurl', theme.base0E)
-
-  -- Startify highlighting
-  highlight('StartifyBracket', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('StartifyFile', theme.base07, nil, cterm07, nil, nil, nil)
-  highlight('StartifyFooter', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('StartifyHeader', theme.base0B, nil, cterm0B, nil, nil, nil)
-  highlight('StartifyNumber', theme.base09, nil, cterm09, nil, nil, nil)
-  highlight('StartifyPath', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('StartifySection', theme.base0E, nil, cterm0E, nil, nil, nil)
-  highlight('StartifySelect', theme.base0C, nil, cterm0C, nil, nil, nil)
-  highlight('StartifySlash', theme.base03, nil, cterm03, nil, nil, nil)
-  highlight('StartifySpecial', theme.base03, nil, cterm03, nil, nil, nil)
-
-  -- Java highlighting
-  highlight('javaOperator', theme.base0D, nil, cterm0D, nil, nil, nil)
-
-  -- TODO
-  -- nvim_command 'syntax enable'
-end
-
 local themes = {}
+local Theme = {}
+local theme_mt = {}
+theme_mt.__index = theme_mt
 
--- nvim.command [[342,1109s/= "/&#/g]]
-themes['3024'] = {
+function theme_mt:apply()
+  require('base16').apply(self, true)
+end
+
+function Theme:new(colors)
+  return setmetatable(colors, theme_mt)
+end
+
+themes['3024'] = Theme:new {
   base00 = '#090300',
   base01 = '#3a3432',
   base02 = '#4a4543',
@@ -352,7 +29,7 @@ themes['3024'] = {
   base0E = '#a16a94',
   base0F = '#cdab53',
 }
-themes['apathy'] = {
+themes['apathy'] = Theme:new {
   base00 = '#031A16',
   base01 = '#0B342D',
   base02 = '#184E45',
@@ -370,7 +47,7 @@ themes['apathy'] = {
   base0E = '#4C963E',
   base0F = '#3E965B',
 }
-themes['ashes'] = {
+themes['ashes'] = Theme:new {
   base00 = '#1C2023',
   base01 = '#393F45',
   base02 = '#565E65',
@@ -388,7 +65,7 @@ themes['ashes'] = {
   base0E = '#C795AE',
   base0F = '#C79595',
 }
-themes['atelier-cave-light'] = {
+themes['atelier-cave-light'] = Theme:new {
   base00 = '#efecf4',
   base01 = '#e2dfe7',
   base02 = '#8b8792',
@@ -406,7 +83,7 @@ themes['atelier-cave-light'] = {
   base0E = '#955ae7',
   base0F = '#bf40bf',
 }
-themes['atelier-cave'] = {
+themes['atelier-cave'] = Theme:new {
   base00 = '#19171c',
   base01 = '#26232a',
   base02 = '#585260',
@@ -424,7 +101,7 @@ themes['atelier-cave'] = {
   base0E = '#955ae7',
   base0F = '#bf40bf',
 }
-themes['atelier-dune-light'] = {
+themes['atelier-dune-light'] = Theme:new {
   base00 = '#fefbec',
   base01 = '#e8e4cf',
   base02 = '#a6a28c',
@@ -442,7 +119,7 @@ themes['atelier-dune-light'] = {
   base0E = '#b854d4',
   base0F = '#d43552',
 }
-themes['atelier-dune'] = {
+themes['atelier-dune'] = Theme:new {
   base00 = '#20201d',
   base01 = '#292824',
   base02 = '#6e6b5e',
@@ -460,7 +137,7 @@ themes['atelier-dune'] = {
   base0E = '#b854d4',
   base0F = '#d43552',
 }
-themes['atelier-estuary-light'] = {
+themes['atelier-estuary-light'] = Theme:new {
   base00 = '#f4f3ec',
   base01 = '#e7e6df',
   base02 = '#929181',
@@ -478,7 +155,7 @@ themes['atelier-estuary-light'] = {
   base0E = '#5f9182',
   base0F = '#9d6c7c',
 }
-themes['atelier-estuary'] = {
+themes['atelier-estuary'] = Theme:new {
   base00 = '#22221b',
   base01 = '#302f27',
   base02 = '#5f5e4e',
@@ -496,7 +173,7 @@ themes['atelier-estuary'] = {
   base0E = '#5f9182',
   base0F = '#9d6c7c',
 }
-themes['atelier-forest-light'] = {
+themes['atelier-forest-light'] = Theme:new {
   base00 = '#f1efee',
   base01 = '#e6e2e0',
   base02 = '#a8a19f',
@@ -514,7 +191,7 @@ themes['atelier-forest-light'] = {
   base0E = '#6666ea',
   base0F = '#c33ff3',
 }
-themes['atelier-forest'] = {
+themes['atelier-forest'] = Theme:new {
   base00 = '#1b1918',
   base01 = '#2c2421',
   base02 = '#68615e',
@@ -532,7 +209,7 @@ themes['atelier-forest'] = {
   base0E = '#6666ea',
   base0F = '#c33ff3',
 }
-themes['atelier-heath-light'] = {
+themes['atelier-heath-light'] = Theme:new {
   base00 = '#f7f3f7',
   base01 = '#d8cad8',
   base02 = '#ab9bab',
@@ -550,7 +227,7 @@ themes['atelier-heath-light'] = {
   base0E = '#7b59c0',
   base0F = '#cc33cc',
 }
-themes['atelier-heath'] = {
+themes['atelier-heath'] = Theme:new {
   base00 = '#1b181b',
   base01 = '#292329',
   base02 = '#695d69',
@@ -568,7 +245,7 @@ themes['atelier-heath'] = {
   base0E = '#7b59c0',
   base0F = '#cc33cc',
 }
-themes['atelier-lakeside-light'] = {
+themes['atelier-lakeside-light'] = Theme:new {
   base00 = '#ebf8ff',
   base01 = '#c1e4f6',
   base02 = '#7ea2b4',
@@ -586,7 +263,7 @@ themes['atelier-lakeside-light'] = {
   base0E = '#6b6bb8',
   base0F = '#b72dd2',
 }
-themes['atelier-lakeside'] = {
+themes['atelier-lakeside'] = Theme:new {
   base00 = '#161b1d',
   base01 = '#1f292e',
   base02 = '#516d7b',
@@ -604,7 +281,7 @@ themes['atelier-lakeside'] = {
   base0E = '#6b6bb8',
   base0F = '#b72dd2',
 }
-themes['atelier-plateau-light'] = {
+themes['atelier-plateau-light'] = Theme:new {
   base00 = '#f4ecec',
   base01 = '#e7dfdf',
   base02 = '#8a8585',
@@ -622,7 +299,7 @@ themes['atelier-plateau-light'] = {
   base0E = '#8464c4',
   base0F = '#bd5187',
 }
-themes['atelier-plateau'] = {
+themes['atelier-plateau'] = Theme:new {
   base00 = '#1b1818',
   base01 = '#292424',
   base02 = '#585050',
@@ -640,7 +317,7 @@ themes['atelier-plateau'] = {
   base0E = '#8464c4',
   base0F = '#bd5187',
 }
-themes['atelier-savanna-light'] = {
+themes['atelier-savanna-light'] = Theme:new {
   base00 = '#ecf4ee',
   base01 = '#dfe7e2',
   base02 = '#87928a',
@@ -658,7 +335,7 @@ themes['atelier-savanna-light'] = {
   base0E = '#55859b',
   base0F = '#867469',
 }
-themes['atelier-savanna'] = {
+themes['atelier-savanna'] = Theme:new {
   base00 = '#171c19',
   base01 = '#232a25',
   base02 = '#526057',
@@ -676,7 +353,7 @@ themes['atelier-savanna'] = {
   base0E = '#55859b',
   base0F = '#867469',
 }
-themes['atelier-seaside-light'] = {
+themes['atelier-seaside-light'] = Theme:new {
   base00 = '#f4fbf4',
   base01 = '#cfe8cf',
   base02 = '#8ca68c',
@@ -694,7 +371,7 @@ themes['atelier-seaside-light'] = {
   base0E = '#ad2bee',
   base0F = '#e619c3',
 }
-themes['atelier-seaside'] = {
+themes['atelier-seaside'] = Theme:new {
   base00 = '#131513',
   base01 = '#242924',
   base02 = '#5e6e5e',
@@ -712,7 +389,7 @@ themes['atelier-seaside'] = {
   base0E = '#ad2bee',
   base0F = '#e619c3',
 }
-themes['atelier-sulphurpool-light'] = {
+themes['atelier-sulphurpool-light'] = Theme:new {
   base00 = '#f5f7ff',
   base01 = '#dfe2f1',
   base02 = '#979db4',
@@ -730,7 +407,7 @@ themes['atelier-sulphurpool-light'] = {
   base0E = '#6679cc',
   base0F = '#9c637a',
 }
-themes['atelier-sulphurpool'] = {
+themes['atelier-sulphurpool'] = Theme:new {
   base00 = '#202746',
   base01 = '#293256',
   base02 = '#5e6687',
@@ -748,7 +425,7 @@ themes['atelier-sulphurpool'] = {
   base0E = '#6679cc',
   base0F = '#9c637a',
 }
-themes['atlas'] = {
+themes['atlas'] = Theme:new {
   base00 = '#002635',
   base01 = '#00384d',
   base02 = '#517F8D',
@@ -766,7 +443,7 @@ themes['atlas'] = {
   base0E = '#9a70a4',
   base0F = '#c43060',
 }
-themes['bespin'] = {
+themes['bespin'] = Theme:new {
   base00 = '#28211c',
   base01 = '#36312e',
   base02 = '#5e5d5c',
@@ -784,7 +461,7 @@ themes['bespin'] = {
   base0E = '#9b859d',
   base0F = '#937121',
 }
-themes['black-metal-bathory'] = {
+themes['black-metal-bathory'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -802,7 +479,7 @@ themes['black-metal-bathory'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-burzum'] = {
+themes['black-metal-burzum'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -820,7 +497,7 @@ themes['black-metal-burzum'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-dark-funeral'] = {
+themes['black-metal-dark-funeral'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -838,7 +515,7 @@ themes['black-metal-dark-funeral'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-gorgoroth'] = {
+themes['black-metal-gorgoroth'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -856,7 +533,7 @@ themes['black-metal-gorgoroth'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-immortal'] = {
+themes['black-metal-immortal'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -874,7 +551,7 @@ themes['black-metal-immortal'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-khold'] = {
+themes['black-metal-khold'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -892,7 +569,7 @@ themes['black-metal-khold'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-marduk'] = {
+themes['black-metal-marduk'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -910,7 +587,7 @@ themes['black-metal-marduk'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-mayhem'] = {
+themes['black-metal-mayhem'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -928,7 +605,7 @@ themes['black-metal-mayhem'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-nile'] = {
+themes['black-metal-nile'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -946,7 +623,7 @@ themes['black-metal-nile'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal-venom'] = {
+themes['black-metal-venom'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -964,7 +641,7 @@ themes['black-metal-venom'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['black-metal'] = {
+themes['black-metal'] = Theme:new {
   base00 = '#000000',
   base01 = '#121212',
   base02 = '#222222',
@@ -982,7 +659,7 @@ themes['black-metal'] = {
   base0E = '#999999',
   base0F = '#444444',
 }
-themes['brewer'] = {
+themes['brewer'] = Theme:new {
   base00 = '#0c0d0e',
   base01 = '#2e2f30',
   base02 = '#515253',
@@ -1000,7 +677,7 @@ themes['brewer'] = {
   base0E = '#756bb1',
   base0F = '#b15928',
 }
-themes['bright'] = {
+themes['bright'] = Theme:new {
   base00 = '#000000',
   base01 = '#303030',
   base02 = '#505050',
@@ -1018,7 +695,7 @@ themes['bright'] = {
   base0E = '#d381c3',
   base0F = '#be643c',
 }
-themes['brogrammer'] = {
+themes['brogrammer'] = Theme:new {
   base00 = '#1f1f1f',
   base01 = '#f81118',
   base02 = '#2dc55e',
@@ -1036,7 +713,7 @@ themes['brogrammer'] = {
   base0E = '#0f7ddb',
   base0F = '#ffffff',
 }
-themes['brushtrees-dark'] = {
+themes['brushtrees-dark'] = Theme:new {
   base00 = '#485867',
   base01 = '#5A6D7A',
   base02 = '#6D828E',
@@ -1054,7 +731,7 @@ themes['brushtrees-dark'] = {
   base0E = '#b386b2',
   base0F = '#b39f9f',
 }
-themes['brushtrees'] = {
+themes['brushtrees'] = Theme:new {
   base00 = '#E3EFEF',
   base01 = '#C9DBDC',
   base02 = '#B0C5C8',
@@ -1072,7 +749,7 @@ themes['brushtrees'] = {
   base0E = '#b386b2',
   base0F = '#b39f9f',
 }
-themes['chalk'] = {
+themes['chalk'] = Theme:new {
   base00 = '#151515',
   base01 = '#202020',
   base02 = '#303030',
@@ -1090,7 +767,7 @@ themes['chalk'] = {
   base0E = '#e1a3ee',
   base0F = '#deaf8f',
 }
-themes['circus'] = {
+themes['circus'] = Theme:new {
   base00 = '#191919',
   base01 = '#202020',
   base02 = '#303030',
@@ -1108,7 +785,7 @@ themes['circus'] = {
   base0E = '#b888e2',
   base0F = '#b888e2',
 }
-themes['classic-dark'] = {
+themes['classic-dark'] = Theme:new {
   base00 = '#151515',
   base01 = '#202020',
   base02 = '#303030',
@@ -1126,7 +803,7 @@ themes['classic-dark'] = {
   base0E = '#AA759F',
   base0F = '#8F5536',
 }
-themes['classic-light'] = {
+themes['classic-light'] = Theme:new {
   base00 = '#F5F5F5',
   base01 = '#E0E0E0',
   base02 = '#D0D0D0',
@@ -1144,7 +821,7 @@ themes['classic-light'] = {
   base0E = '#AA759F',
   base0F = '#8F5536',
 }
-themes['codeschool'] = {
+themes['codeschool'] = Theme:new {
   base00 = '#232c31',
   base01 = '#1c3657',
   base02 = '#2a343a',
@@ -1162,7 +839,7 @@ themes['codeschool'] = {
   base0E = '#c59820',
   base0F = '#c98344',
 }
-themes['cupcake'] = {
+themes['cupcake'] = Theme:new {
   base00 = '#fbf1f2',
   base01 = '#f2f1f4',
   base02 = '#d8d5dd',
@@ -1180,7 +857,7 @@ themes['cupcake'] = {
   base0E = '#BB99B4',
   base0F = '#BAA58C',
 }
-themes['cupertino'] = {
+themes['cupertino'] = Theme:new {
   base00 = '#ffffff',
   base01 = '#c0c0c0',
   base02 = '#c0c0c0',
@@ -1198,7 +875,7 @@ themes['cupertino'] = {
   base0E = '#a90d91',
   base0F = '#826b28',
 }
-themes['darktooth'] = {
+themes['darktooth'] = Theme:new {
   base00 = '#1D2021',
   base01 = '#32302F',
   base02 = '#504945',
@@ -1216,7 +893,7 @@ themes['darktooth'] = {
   base0E = '#8F4673',
   base0F = '#A87322',
 }
-themes['default-dark'] = {
+themes['default-dark'] = Theme:new {
   base00 = '#181818',
   base01 = '#282828',
   base02 = '#383838',
@@ -1234,7 +911,7 @@ themes['default-dark'] = {
   base0E = '#ba8baf',
   base0F = '#a16946',
 }
-themes['default-light'] = {
+themes['default-light'] = Theme:new {
   base00 = '#f8f8f8',
   base01 = '#e8e8e8',
   base02 = '#d8d8d8',
@@ -1252,7 +929,7 @@ themes['default-light'] = {
   base0E = '#ba8baf',
   base0F = '#a16946',
 }
-themes['dracula'] = {
+themes['dracula'] = Theme:new {
   base00 = '#282936',
   base01 = '#3a3c4e',
   base02 = '#4d4f68',
@@ -1270,7 +947,7 @@ themes['dracula'] = {
   base0E = '#b45bcf',
   base0F = '#00f769',
 }
-themes['eighties'] = {
+themes['eighties'] = Theme:new {
   base00 = '#2d2d2d',
   base01 = '#393939',
   base02 = '#515151',
@@ -1288,7 +965,7 @@ themes['eighties'] = {
   base0E = '#cc99cc',
   base0F = '#d27b53',
 }
-themes['embers'] = {
+themes['embers'] = Theme:new {
   base00 = '#16130F',
   base01 = '#2C2620',
   base02 = '#433B32',
@@ -1306,7 +983,7 @@ themes['embers'] = {
   base0E = '#82576D',
   base0F = '#825757',
 }
-themes['flat'] = {
+themes['flat'] = Theme:new {
   base00 = '#2C3E50',
   base01 = '#34495E',
   base02 = '#7F8C8D',
@@ -1324,7 +1001,7 @@ themes['flat'] = {
   base0E = '#9B59B6',
   base0F = '#be643c',
 }
-themes['fruit-soda'] = {
+themes['fruit-soda'] = Theme:new {
   base00 = '#f1ecf1',
   base01 = '#e0dee0',
   base02 = '#d8d5d5',
@@ -1342,7 +1019,7 @@ themes['fruit-soda'] = {
   base0E = '#611fce',
   base0F = '#b16f40',
 }
-themes['github'] = {
+themes['github'] = Theme:new {
   base00 = '#ffffff',
   base01 = '#f5f5f5',
   base02 = '#c8c8fa',
@@ -1360,7 +1037,7 @@ themes['github'] = {
   base0E = '#a71d5d',
   base0F = '#333333',
 }
-themes['google-dark'] = {
+themes['google-dark'] = Theme:new {
   base00 = '#1d1f21',
   base01 = '#282a2e',
   base02 = '#373b41',
@@ -1378,7 +1055,7 @@ themes['google-dark'] = {
   base0E = '#A36AC7',
   base0F = '#3971ED',
 }
-themes['google-light'] = {
+themes['google-light'] = Theme:new {
   base00 = '#ffffff',
   base01 = '#e0e0e0',
   base02 = '#c5c8c6',
@@ -1396,7 +1073,7 @@ themes['google-light'] = {
   base0E = '#A36AC7',
   base0F = '#3971ED',
 }
-themes['grayscale-dark'] = {
+themes['grayscale-dark'] = Theme:new {
   base00 = '#101010',
   base01 = '#252525',
   base02 = '#464646',
@@ -1414,7 +1091,7 @@ themes['grayscale-dark'] = {
   base0E = '#747474',
   base0F = '#5e5e5e',
 }
-themes['grayscale-light'] = {
+themes['grayscale-light'] = Theme:new {
   base00 = '#f7f7f7',
   base01 = '#e3e3e3',
   base02 = '#b9b9b9',
@@ -1432,7 +1109,7 @@ themes['grayscale-light'] = {
   base0E = '#747474',
   base0F = '#5e5e5e',
 }
-themes['greenscreen'] = {
+themes['greenscreen'] = Theme:new {
   base00 = '#001100',
   base01 = '#003300',
   base02 = '#005500',
@@ -1450,7 +1127,7 @@ themes['greenscreen'] = {
   base0E = '#00bb00',
   base0F = '#005500',
 }
-themes['gruvbox-dark-hard'] = {
+themes['gruvbox-dark-hard'] = Theme:new {
   base00 = '#1d2021',
   base01 = '#3c3836',
   base02 = '#504945',
@@ -1468,7 +1145,7 @@ themes['gruvbox-dark-hard'] = {
   base0E = '#d3869b',
   base0F = '#d65d0e',
 }
-themes['gruvbox-dark-medium'] = {
+themes['gruvbox-dark-medium'] = Theme:new {
   base00 = '#282828',
   base01 = '#3c3836',
   base02 = '#504945',
@@ -1486,7 +1163,7 @@ themes['gruvbox-dark-medium'] = {
   base0E = '#d3869b',
   base0F = '#d65d0e',
 }
-themes['gruvbox-dark-pale'] = {
+themes['gruvbox-dark-pale'] = Theme:new {
   base00 = '#262626',
   base01 = '#3a3a3a',
   base02 = '#4e4e4e',
@@ -1504,7 +1181,7 @@ themes['gruvbox-dark-pale'] = {
   base0E = '#d485ad',
   base0F = '#d65d0e',
 }
-themes['gruvbox-dark-soft'] = {
+themes['gruvbox-dark-soft'] = Theme:new {
   base00 = '#32302f',
   base01 = '#3c3836',
   base02 = '#504945',
@@ -1522,7 +1199,7 @@ themes['gruvbox-dark-soft'] = {
   base0E = '#d3869b',
   base0F = '#d65d0e',
 }
-themes['gruvbox-light-hard'] = {
+themes['gruvbox-light-hard'] = Theme:new {
   base00 = '#f9f5d7',
   base01 = '#ebdbb2',
   base02 = '#d5c4a1',
@@ -1540,7 +1217,7 @@ themes['gruvbox-light-hard'] = {
   base0E = '#8f3f71',
   base0F = '#d65d0e',
 }
-themes['gruvbox-light-medium'] = {
+themes['gruvbox-light-medium'] = Theme:new {
   base00 = '#fbf1c7',
   base01 = '#ebdbb2',
   base02 = '#d5c4a1',
@@ -1558,7 +1235,7 @@ themes['gruvbox-light-medium'] = {
   base0E = '#8f3f71',
   base0F = '#d65d0e',
 }
-themes['gruvbox-light-soft'] = {
+themes['gruvbox-light-soft'] = Theme:new {
   base00 = '#f2e5bc',
   base01 = '#ebdbb2',
   base02 = '#d5c4a1',
@@ -1576,7 +1253,7 @@ themes['gruvbox-light-soft'] = {
   base0E = '#8f3f71',
   base0F = '#d65d0e',
 }
-themes['harmonic-dark'] = {
+themes['harmonic-dark'] = Theme:new {
   base00 = '#0b1c2c',
   base01 = '#223b54',
   base02 = '#405c79',
@@ -1594,7 +1271,7 @@ themes['harmonic-dark'] = {
   base0E = '#bf568b',
   base0F = '#bf5656',
 }
-themes['harmonic-light'] = {
+themes['harmonic-light'] = Theme:new {
   base00 = '#f7f9fb',
   base01 = '#e5ebf1',
   base02 = '#cbd6e2',
@@ -1612,7 +1289,7 @@ themes['harmonic-light'] = {
   base0E = '#bf568b',
   base0F = '#bf5656',
 }
-themes['heetch-light'] = {
+themes['heetch-light'] = Theme:new {
   base00 = '#feffff',
   base01 = '#392551',
   base02 = '#7b6d8b',
@@ -1630,7 +1307,7 @@ themes['heetch-light'] = {
   base0E = '#bd0152',
   base0F = '#dedae2',
 }
-themes['heetch'] = {
+themes['heetch'] = Theme:new {
   base00 = '#190134',
   base01 = '#392551',
   base02 = '#5A496E',
@@ -1648,7 +1325,7 @@ themes['heetch'] = {
   base0E = '#82034C',
   base0F = '#470546',
 }
-themes['helios'] = {
+themes['helios'] = Theme:new {
   base00 = '#1d2021',
   base01 = '#383c3e',
   base02 = '#53585b',
@@ -1666,7 +1343,7 @@ themes['helios'] = {
   base0E = '#be4264',
   base0F = '#c85e0d',
 }
-themes['hopscotch'] = {
+themes['hopscotch'] = Theme:new {
   base00 = '#322931',
   base01 = '#433b42',
   base02 = '#5c545b',
@@ -1684,7 +1361,7 @@ themes['hopscotch'] = {
   base0E = '#c85e7c',
   base0F = '#b33508',
 }
-themes['horizon-dark'] = {
+themes['horizon-dark'] = Theme:new {
   base00 = '#1C1E26',
   base01 = '#232530',
   base02 = '#2E303E',
@@ -1702,7 +1379,7 @@ themes['horizon-dark'] = {
   base0E = '#B072D1',
   base0F = '#E4A382',
 }
-themes['ia-dark'] = {
+themes['ia-dark'] = Theme:new {
   base00 = '#1a1a1a',
   base01 = '#222222',
   base02 = '#1d414d',
@@ -1720,7 +1397,7 @@ themes['ia-dark'] = {
   base0E = '#b98eb2',
   base0F = '#8b6c37',
 }
-themes['ia-light'] = {
+themes['ia-light'] = Theme:new {
   base00 = '#f6f6f6',
   base01 = '#dedede',
   base02 = '#bde5f2',
@@ -1738,7 +1415,7 @@ themes['ia-light'] = {
   base0E = '#a94598',
   base0F = '#8b6c37',
 }
-themes['icy'] = {
+themes['icy'] = Theme:new {
   base00 = '#021012',
   base01 = '#031619',
   base02 = '#041f23',
@@ -1756,7 +1433,7 @@ themes['icy'] = {
   base0E = '#00acc1',
   base0F = '#0097a7',
 }
-themes['irblack'] = {
+themes['irblack'] = Theme:new {
   base00 = '#000000',
   base01 = '#242422',
   base02 = '#484844',
@@ -1774,7 +1451,7 @@ themes['irblack'] = {
   base0E = '#ff73fd',
   base0F = '#b18a3d',
 }
-themes['isotope'] = {
+themes['isotope'] = Theme:new {
   base00 = '#000000',
   base01 = '#404040',
   base02 = '#606060',
@@ -1792,7 +1469,7 @@ themes['isotope'] = {
   base0E = '#cc00ff',
   base0F = '#3300ff',
 }
-themes['macintosh'] = {
+themes['macintosh'] = Theme:new {
   base00 = '#000000',
   base01 = '#404040',
   base02 = '#404040',
@@ -1810,7 +1487,7 @@ themes['macintosh'] = {
   base0E = '#4700a5',
   base0F = '#90713a',
 }
-themes['marrakesh'] = {
+themes['marrakesh'] = Theme:new {
   base00 = '#201602',
   base01 = '#302e00',
   base02 = '#5f5b17',
@@ -1828,7 +1505,7 @@ themes['marrakesh'] = {
   base0E = '#8868b3',
   base0F = '#b3588e',
 }
-themes['materia'] = {
+themes['materia'] = Theme:new {
   base00 = '#263238',
   base01 = '#2C393F',
   base02 = '#37474F',
@@ -1846,7 +1523,7 @@ themes['materia'] = {
   base0E = '#82AAFF',
   base0F = '#EC5F67',
 }
-themes['material-darker'] = {
+themes['material-darker'] = Theme:new {
   base00 = '#212121',
   base01 = '#303030',
   base02 = '#353535',
@@ -1864,7 +1541,7 @@ themes['material-darker'] = {
   base0E = '#C792EA',
   base0F = '#FF5370',
 }
-themes['material-lighter'] = {
+themes['material-lighter'] = Theme:new {
   base00 = '#FAFAFA',
   base01 = '#E7EAEC',
   base02 = '#CCEAE7',
@@ -1882,7 +1559,7 @@ themes['material-lighter'] = {
   base0E = '#7C4DFF',
   base0F = '#E53935',
 }
-themes['material-palenight'] = {
+themes['material-palenight'] = Theme:new {
   base00 = '#292D3E',
   base01 = '#444267',
   base02 = '#32374D',
@@ -1900,7 +1577,7 @@ themes['material-palenight'] = {
   base0E = '#C792EA',
   base0F = '#FF5370',
 }
-themes['material-vivid'] = {
+themes['material-vivid'] = Theme:new {
   base00 = '#202124',
   base01 = '#27292c',
   base02 = '#323639',
@@ -1918,7 +1595,7 @@ themes['material-vivid'] = {
   base0E = '#673ab7',
   base0F = '#8d6e63',
 }
-themes['material'] = {
+themes['material'] = Theme:new {
   base00 = '#263238',
   base01 = '#2E3C43',
   base02 = '#314549',
@@ -1936,7 +1613,7 @@ themes['material'] = {
   base0E = '#C792EA',
   base0F = '#FF5370',
 }
-themes['mellow-purple'] = {
+themes['mellow-purple'] = Theme:new {
   base00 = '#1e0528',
   base01 = '#1A092D',
   base02 = '#331354',
@@ -1954,7 +1631,7 @@ themes['mellow-purple'] = {
   base0E = '#8991bb',
   base0F = '#4d6fff',
 }
-themes['mexico-light'] = {
+themes['mexico-light'] = Theme:new {
   base00 = '#f8f8f8',
   base01 = '#e8e8e8',
   base02 = '#d8d8d8',
@@ -1972,7 +1649,7 @@ themes['mexico-light'] = {
   base0E = '#96609e',
   base0F = '#a16946',
 }
-themes['mocha'] = {
+themes['mocha'] = Theme:new {
   base00 = '#3B3228',
   base01 = '#534636',
   base02 = '#645240',
@@ -1990,7 +1667,7 @@ themes['mocha'] = {
   base0E = '#a89bb9',
   base0F = '#bb9584',
 }
-themes['monokai'] = {
+themes['monokai'] = Theme:new {
   base00 = '#272822',
   base01 = '#383830',
   base02 = '#49483e',
@@ -2008,7 +1685,7 @@ themes['monokai'] = {
   base0E = '#ae81ff',
   base0F = '#cc6633',
 }
-themes['norcalli'] = {
+themes['norcalli'] = Theme:new {
   base00 = '#121b2b',
   base01 = '#213554',
   base02 = '#1d3872',
@@ -2026,7 +1703,7 @@ themes['norcalli'] = {
   base0E = '#c678dd',
   base0F = '#be5046',
 }
-themes['nord'] = {
+themes['nord'] = Theme:new {
   base00 = '#2E3440',
   base01 = '#3B4252',
   base02 = '#434C5E',
@@ -2044,7 +1721,7 @@ themes['nord'] = {
   base0E = '#A3BE8C',
   base0F = '#B48EAD',
 }
-themes['ocean'] = {
+themes['ocean'] = Theme:new {
   base00 = '#2b303b',
   base01 = '#343d46',
   base02 = '#4f5b66',
@@ -2062,7 +1739,7 @@ themes['ocean'] = {
   base0E = '#b48ead',
   base0F = '#ab7967',
 }
-themes['oceanicnext'] = {
+themes['oceanicnext'] = Theme:new {
   base00 = '#1B2B34',
   base01 = '#343D46',
   base02 = '#4F5B66',
@@ -2080,7 +1757,7 @@ themes['oceanicnext'] = {
   base0E = '#C594C5',
   base0F = '#AB7967',
 }
-themes['one-light'] = {
+themes['one-light'] = Theme:new {
   base00 = '#fafafa',
   base01 = '#f0f0f1',
   base02 = '#e5e5e6',
@@ -2098,7 +1775,7 @@ themes['one-light'] = {
   base0E = '#a626a4',
   base0F = '#986801',
 }
-themes['onedark'] = {
+themes['onedark'] = Theme:new {
   base00 = '#282c34',
   base01 = '#353b45',
   base02 = '#3e4451',
@@ -2116,7 +1793,7 @@ themes['onedark'] = {
   base0E = '#c678dd',
   base0F = '#be5046',
 }
-themes['outrun-dark'] = {
+themes['outrun-dark'] = Theme:new {
   base00 = '#00002A',
   base01 = '#20204A',
   base02 = '#30305A',
@@ -2134,7 +1811,7 @@ themes['outrun-dark'] = {
   base0E = '#F10596',
   base0F = '#F003EF',
 }
-themes['papercolor-dark'] = {
+themes['papercolor-dark'] = Theme:new {
   base00 = '#1c1c1c',
   base01 = '#af005f',
   base02 = '#5faf00',
@@ -2152,7 +1829,7 @@ themes['papercolor-dark'] = {
   base0E = '#00afaf',
   base0F = '#5f8787',
 }
-themes['papercolor-light'] = {
+themes['papercolor-light'] = Theme:new {
   base00 = '#eeeeee',
   base01 = '#af0000',
   base02 = '#008700',
@@ -2170,7 +1847,7 @@ themes['papercolor-light'] = {
   base0E = '#005faf',
   base0F = '#005f87',
 }
-themes['paraiso'] = {
+themes['paraiso'] = Theme:new {
   base00 = '#2f1e2e',
   base01 = '#41323f',
   base02 = '#4f424c',
@@ -2188,7 +1865,7 @@ themes['paraiso'] = {
   base0E = '#815ba4',
   base0F = '#e96ba8',
 }
-themes['phd'] = {
+themes['phd'] = Theme:new {
   base00 = '#061229',
   base01 = '#2a3448',
   base02 = '#4d5666',
@@ -2206,7 +1883,7 @@ themes['phd'] = {
   base0E = '#9989cc',
   base0F = '#b08060',
 }
-themes['pico'] = {
+themes['pico'] = Theme:new {
   base00 = '#000000',
   base01 = '#1d2b53',
   base02 = '#7e2553',
@@ -2224,7 +1901,7 @@ themes['pico'] = {
   base0E = '#ff77a8',
   base0F = '#ffccaa',
 }
-themes['pop'] = {
+themes['pop'] = Theme:new {
   base00 = '#000000',
   base01 = '#202020',
   base02 = '#303030',
@@ -2242,7 +1919,7 @@ themes['pop'] = {
   base0E = '#b31e8d',
   base0F = '#7a2d00',
 }
-themes['porple'] = {
+themes['porple'] = Theme:new {
   base00 = '#292c36',
   base01 = '#333344',
   base02 = '#474160',
@@ -2260,7 +1937,7 @@ themes['porple'] = {
   base0E = '#b74989',
   base0F = '#986841',
 }
-themes['railscasts'] = {
+themes['railscasts'] = Theme:new {
   base00 = '#2b2b2b',
   base01 = '#272935',
   base02 = '#3a4055',
@@ -2278,7 +1955,7 @@ themes['railscasts'] = {
   base0E = '#b6b3eb',
   base0F = '#bc9458',
 }
-themes['rebecca'] = {
+themes['rebecca'] = Theme:new {
   base00 = '#292a44',
   base01 = '#663399',
   base02 = '#383a62',
@@ -2296,7 +1973,7 @@ themes['rebecca'] = {
   base0E = '#7aa5ff',
   base0F = '#ff79c6',
 }
-themes['seti'] = {
+themes['seti'] = Theme:new {
   base00 = '#151718',
   base01 = '#282a2b',
   base02 = '#3B758C',
@@ -2314,7 +1991,7 @@ themes['seti'] = {
   base0E = '#a074c4',
   base0F = '#8a553f',
 }
-themes['shapeshifter'] = {
+themes['shapeshifter'] = Theme:new {
   base00 = '#f9f9f9',
   base01 = '#e0e0e0',
   base02 = '#ababab',
@@ -2332,7 +2009,7 @@ themes['shapeshifter'] = {
   base0E = '#f996e2',
   base0F = '#69542d',
 }
-themes['snazzy'] = {
+themes['snazzy'] = Theme:new {
   base00 = '#282a36',
   base01 = '#34353e',
   base02 = '#43454f',
@@ -2350,7 +2027,7 @@ themes['snazzy'] = {
   base0E = '#ff6ac1',
   base0F = '#b2643c',
 }
-themes['solarflare'] = {
+themes['solarflare'] = Theme:new {
   base00 = '#18262F',
   base01 = '#222E38',
   base02 = '#586875',
@@ -2368,7 +2045,7 @@ themes['solarflare'] = {
   base0E = '#A363D5',
   base0F = '#D73C9A',
 }
-themes['solarized-dark'] = {
+themes['solarized-dark'] = Theme:new {
   base00 = '#002b36',
   base01 = '#073642',
   base02 = '#586e75',
@@ -2386,7 +2063,7 @@ themes['solarized-dark'] = {
   base0E = '#6c71c4',
   base0F = '#d33682',
 }
-themes['solarized-light'] = {
+themes['solarized-light'] = Theme:new {
   base00 = '#fdf6e3',
   base01 = '#eee8d5',
   base02 = '#93a1a1',
@@ -2404,7 +2081,7 @@ themes['solarized-light'] = {
   base0E = '#6c71c4',
   base0F = '#d33682',
 }
-themes['spacemacs'] = {
+themes['spacemacs'] = Theme:new {
   base00 = '#1f2022',
   base01 = '#282828',
   base02 = '#444155',
@@ -2422,7 +2099,7 @@ themes['spacemacs'] = {
   base0E = '#a31db1',
   base0F = '#b03060',
 }
-themes['summerfruit-dark'] = {
+themes['summerfruit-dark'] = Theme:new {
   base00 = '#151515',
   base01 = '#202020',
   base02 = '#303030',
@@ -2440,7 +2117,7 @@ themes['summerfruit-dark'] = {
   base0E = '#AD00A1',
   base0F = '#CC6633',
 }
-themes['summerfruit-light'] = {
+themes['summerfruit-light'] = Theme:new {
   base00 = '#FFFFFF',
   base01 = '#E0E0E0',
   base02 = '#D0D0D0',
@@ -2458,7 +2135,7 @@ themes['summerfruit-light'] = {
   base0E = '#AD00A1',
   base0F = '#CC6633',
 }
-themes['synth-midnight-dark'] = {
+themes['synth-midnight-dark'] = Theme:new {
   base00 = '#040404',
   base01 = '#141414',
   base02 = '#242424',
@@ -2476,7 +2153,7 @@ themes['synth-midnight-dark'] = {
   base0E = '#EA5CE2',
   base0F = '#9D4D0E',
 }
-themes['tomorrow-night-eighties'] = {
+themes['tomorrow-night-eighties'] = Theme:new {
   base00 = '#2d2d2d',
   base01 = '#393939',
   base02 = '#515151',
@@ -2494,7 +2171,7 @@ themes['tomorrow-night-eighties'] = {
   base0E = '#cc99cc',
   base0F = '#a3685a',
 }
-themes['tomorrow-night'] = {
+themes['tomorrow-night'] = Theme:new {
   base00 = '#1d1f21',
   base01 = '#282a2e',
   base02 = '#373b41',
@@ -2512,7 +2189,7 @@ themes['tomorrow-night'] = {
   base0E = '#b294bb',
   base0F = '#a3685a',
 }
-themes['tomorrow'] = {
+themes['tomorrow'] = Theme:new {
   base00 = '#ffffff',
   base01 = '#e0e0e0',
   base02 = '#d6d6d6',
@@ -2530,7 +2207,7 @@ themes['tomorrow'] = {
   base0E = '#8959a8',
   base0F = '#a3685a',
 }
-themes['tube'] = {
+themes['tube'] = Theme:new {
   base00 = '#231f20',
   base01 = '#1c3f95',
   base02 = '#5a5758',
@@ -2548,7 +2225,7 @@ themes['tube'] = {
   base0E = '#98005d',
   base0F = '#b06110',
 }
-themes['twilight'] = {
+themes['twilight'] = Theme:new {
   base00 = '#1e1e1e',
   base01 = '#323537',
   base02 = '#464b50',
@@ -2566,7 +2243,7 @@ themes['twilight'] = {
   base0E = '#9b859d',
   base0F = '#9b703f',
 }
-themes['unikitty-dark'] = {
+themes['unikitty-dark'] = Theme:new {
   base00 = '#2e2a31',
   base01 = '#4a464d',
   base02 = '#666369',
@@ -2584,7 +2261,7 @@ themes['unikitty-dark'] = {
   base0E = '#bb60ea',
   base0F = '#c720ca',
 }
-themes['unikitty-light'] = {
+themes['unikitty-light'] = Theme:new {
   base00 = '#ffffff',
   base01 = '#e1e1e2',
   base02 = '#c4c3c5',
@@ -2602,7 +2279,7 @@ themes['unikitty-light'] = {
   base0E = '#aa17e6',
   base0F = '#e013d0',
 }
-themes['woodland'] = {
+themes['woodland'] = Theme:new {
   base00 = '#231e18',
   base01 = '#302b25',
   base02 = '#48413a',
@@ -2620,7 +2297,7 @@ themes['woodland'] = {
   base0E = '#bb90e2',
   base0F = '#b49368',
 }
-themes['xcode-dusk'] = {
+themes['xcode-dusk'] = Theme:new {
   base00 = '#282B35',
   base01 = '#3D4048',
   base02 = '#53555D',
@@ -2638,7 +2315,7 @@ themes['xcode-dusk'] = {
   base0E = '#B21889',
   base0F = '#C77C48',
 }
-themes['zenburn'] = {
+themes['zenburn'] = Theme:new {
   base00 = '#383838',
   base01 = '#404040',
   base02 = '#606060',
@@ -2656,70 +2333,4 @@ themes['zenburn'] = {
   base0E = '#dc8cc3',
   base0F = '#000000',
 }
-
-local function theme_from_array(array)
-  assert(#array == 16, 'base16.theme_from_array: The array length must be 16')
-  local result = {}
-  for i, value in ipairs(array) do
-    assert(
-      #value == 6,
-      "base16.theme_from_array: array values must be in 6 digit hex format, e.g. 'ffffff'"
-    )
-    local key = ('base%02X'):format(i - 1)
-    result[key] = value
-  end
-  return result
-end
-
-local function validate_input(input)
-  assert(type(input) == 'table', 'base16 input must be a table')
-  for i = 1, 16 do
-    local varn = ('base%02X'):format(i - 1)
-    if type(input[varn]) ~= 'string' then
-      error(varn .. ' is missing from base16 input')
-    end
-  end
-end
-
-local CURRENT_THEME
-
-local function apply(value, use256)
-  local theme_name
-  local theme
-  if type(value) == 'string' then
-    theme_name = value
-    theme = themes[value] or error('Invalid theme name ' .. value)
-  elseif type(value) == 'table' then
-    if value[1] then
-      theme = theme_from_array(value)
-    else
-      theme = value
-    end
-  end
-  validate_input(theme)
-  if theme_name then
-    vim.api.nvim_set_var('colors_name', theme_name)
-  end
-  CURRENT_THEME = theme
-  apply_base16_theme(theme, use256)
-end
-
-return setmetatable({
-  current_theme = function()
-    return CURRENT_THEME
-  end,
-  themes = themes,
-  apply_theme = apply_base16_theme,
-  theme_from_array = theme_from_array,
-  theme_names = function()
-    local result = {}
-    for k in pairs(themes) do
-      table.insert(result, k)
-    end
-    return result
-  end,
-}, {
-  __call = function(_, ...)
-    return apply(...)
-  end,
-})
+return themes
