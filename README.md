@@ -53,5 +53,5 @@ end
 
 ## Credits
 
-Chris Kempson and [Base16](https://github.com/chriskempson/base16) and [base16-vim](https://github.com/chriskempson/base16-vim)
-Ashkan Kiani (norcalli)
+- Chris Kempson for [Base16](https://github.com/chriskempson/base16) and [base16-vim](https://github.com/chriskempson/base16-vim)
+- Ashkan Kiani (norcalli) for original project
