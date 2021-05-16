@@ -328,6 +328,18 @@ local function apply(theme, use_256_colorspace, name)
   highlight('javaOperator', theme.base0D, nil, cterm0D, nil, nil, nil)
 end
 
+local function set(name)
+  require('base16.themes')[name]:apply()
+end
+
+local function edit(name)
+  require'base16.editor'.open(require'base16.themes'[name])
+end
+
+vim.cmd(string.format([[command! -nargs=1 Base16Editor lua require('base16').edit("<args>") ]]))
+
 return {
   apply = apply,
+  set = set,
+  edit = edit,
 }
