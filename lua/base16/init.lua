@@ -27,7 +27,7 @@ local function highlight(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
 end
 
 -- Modified from https://github.com/chriskempson/base16-vim
-local function apply(theme, use_256_colorspace, name)
+local function apply(theme, use_256_colorspace)
   -- Terminal color definitions
   local cterm00 = '00'
   local cterm03 = '08'

@@ -2340,4 +2340,9 @@ function themes:names()
   end
   return names
 end
-return themes
+
+return setmetatable(themes, {
+  __call = function(_, colors)
+    return Theme:new(colors)
+  end
+})

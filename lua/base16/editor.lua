@@ -242,17 +242,19 @@ function M.open(initial)
       if not hex then
         return
       end
-      theme[i] = hex
-      theme[base(i-1)] = hex
+      -- theme[i] = hex
+      theme[base(i-1)] = pre_process_colors(hex)
     end
     return theme
   end
+
 
   api.nvim_buf_attach(bufnr, false, {
     on_lines = function()
       local theme = get()
       if theme then
-        base16.apply_theme(theme)
+        P(theme)
+        require('base16').apply(theme, true)
       end
     end
   })
