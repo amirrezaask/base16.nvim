@@ -1,6 +1,11 @@
 local vim = vim
 local nvim_command = vim.api.nvim_command
 
+local function link(from, to)
+  assert(from and to, 'need from and to')
+  nvim_command(string.format('highlight! link %s %s', from, to))
+end
+
 local function highlight(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
   local parts = { 'highlight', group }
   if guifg then
@@ -326,6 +331,28 @@ local function apply(theme, use_256_colorspace)
 
   -- Java highlighting
   highlight('javaOperator', theme.base0D, nil, cterm0D, nil, nil, nil)
+
+  -- Treesitter highlighting
+  link('TSBoolean', 'Boolean')
+  link('TSLabel', 'Label')
+  link('TSOperator', 'Operator')
+  link('TSRepeat', 'Repeat')
+  link('TSString', 'String')
+  link('TSTag', 'Tag')
+  link('TSType', 'Type')
+  link('TSFunction', 'Function')
+  link('Float', 'Number')
+  link('TSNumber', 'Number')
+  link('TSFloat', 'Number')
+  link('TSCharacter', 'Character')
+  link('TSComment', 'Comment')
+  link('TSConditional', 'Conditional')
+  link('TSConstant', 'Constant')
+  link('Identifier', 'Constant')
+  link('TSInclude', "Define")
+  link('Include', "Define")
+
+
 end
 
 local function set(name)
